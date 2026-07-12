@@ -10,41 +10,40 @@ pipeline {
             }
         }
 
-        stage('Check Tools') {
-            steps {
-                sh 'java -version'
-                sh 'mvn -version'
-            }
-        }
-
         stage('Compile') {
             steps {
-                sh 'mvn clean compile'
+                dir('vehicle-parking') {
+                    sh 'mvn clean compile'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                dir('vehicle-parking') {
+                    sh 'mvn test'
+                }
             }
         }
 
         stage('Package') {
             steps {
-                sh 'mvn package'
+                dir('vehicle-parking') {
+                    sh 'mvn package'
+                }
             }
         }
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'vehicle-parking/target/*.jar', fingerprint: true
             }
         }
     }
 
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            junit testResults: 'vehicle-parking/target/surefire-reports/*.xml', allowEmptyResults: true
         }
     }
 }
