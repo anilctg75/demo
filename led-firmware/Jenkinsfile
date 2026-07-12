@@ -1,6 +1,7 @@
 library identifier: 'shared_library@main', retriever: modernSCM(
     [$class: 'GitSCMSource',
-     remote: 'https://github.com/sandeepds077/shared_library.git',
+     remote: 'https://github.com/sandeephassan/shared_library.git',
+     
      traits: [[$class: 'CloneOptionTrait', noTags: false, shallow: false]]]
 )
 
@@ -10,9 +11,12 @@ pipeline {
         timestamps()
     }
     environment {
-        BUILD_DIR = 'build'
-        PROJECT_DIR = 'led-firmware'
-    }
+    BUILD_DIR = 'build'
+    PROJECT_DIR = 'led-firmware'
+
+    ARM_GCC = '/opt/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin'
+    PATH = "${ARM_GCC}:${env.PATH}"
+}
     stages {
         stage('Checkout') {
             steps {
@@ -50,6 +54,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Debug') {
+    steps {
+        sh '''
+        echo "PATH=$PATH"
+        which arm-none-eabi-gcc
+        arm-none-eabi-gcc --version
+        '''
+    }
+}
 
         stage('Configure') {
             steps {
